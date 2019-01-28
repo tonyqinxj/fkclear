@@ -131,23 +131,25 @@ var happyClear;
                         colorId: 0,
                         x: x,
                         y: y,
+                        gz: null,
                     });
                 }
             }
+        };
+        GameData.prototype.attachGz = function (r, c, gz) {
+            this.gameGrid[r][c].gz = gz;
         };
         GameData.prototype.getGridInfoByPos = function (x, y) {
             return this.gameGrid[x][y];
         };
         GameData.prototype.getPos = function (px, py) {
-            var x = -1;
-            var y = -1;
             for (var i = 0; i < 8; i++) {
                 for (var j = 0; j < 8; j++) {
                     if (this.gameGrid[i][j].x <= px && px <= this.gameGrid[i][j].x + happyClear.Grid_conf.gz_width &&
                         this.gameGrid[i][j].y <= py && py <= this.gameGrid[i][j].y + happyClear.Grid_conf.gz_width) {
                         return {
-                            x: i,
-                            y: j,
+                            r: i,
+                            c: j,
                             find: true,
                         };
                     }
@@ -159,8 +161,9 @@ var happyClear;
         };
         // 初始化一批block（每一批3个）
         GameData.prototype.initBlock = function () {
-            if (this.blocks.length > 0)
-                return;
+            if (this.blocks.length > 0) {
+                this.blocks = [];
+            }
             var x = happyClear.Grid_conf.op_start_x;
             var y = happyClear.Grid_conf.op_start_y;
             for (var i = 0; i < 3; i++) {
@@ -173,7 +176,7 @@ var happyClear;
                     colorId: colorId,
                     blockId: blockId,
                     canPut: false,
-                    isput: false
+                    isPut: false
                 });
                 x += happyClear.Grid_conf.op_size;
             }
@@ -182,20 +185,20 @@ var happyClear;
             }
         };
         // 检测x,y为起始点（左上角）的地方是否能够放入blockId对应的block，拖动的过程中，需要调用，拖动结束的时候需要调用
-        GameData.prototype.blockCanPutPoint = function (x, y, id) {
+        GameData.prototype.blockCanPutPoint = function (r, c, id) {
             if (this.blocks.length < id)
                 return false;
             var blockId = this.blocks[id].blockId;
-            console.log('blockCanPutPoint:', x, y, blockId);
+            console.log('blockCanPutPoint:', r, c, blockId);
             var block = happyClear.Block_conf[blockId];
             var rows = block.length;
             var cols = block[0].length;
             // 顶到边了
-            if (x + cols > 8 || y + rows > 8)
+            if (c + cols > 8 || r + rows > 8)
                 return false;
             for (var i = 0; i < rows; i++) {
                 for (var j = 0; j < cols; j++) {
-                    if (block[i][j] + this.gameGrid[i + x][j + y].num > 1)
+                    if (block[i][j] + this.gameGrid[i + r][j + c].num > 1)
                         return false;
                 }
             }
@@ -226,7 +229,7 @@ var happyClear;
             return false;
         };
         // 将block放入grid，拖动结束的时候需要调用
-        GameData.prototype.blockAddToGrid = function (x, y, id) {
+        GameData.prototype.blockAddToGrid = function (r, c, id) {
             // 没找到
             if (this.blocks.length < id)
                 return false;
@@ -234,7 +237,7 @@ var happyClear;
             var colorId = this.blocks[id].colorId;
             this.blocks[id].canPut = false;
             this.blocks[id].isPut = true;
-            if (!this.blockCanPutPoint(x, y, id))
+            if (!this.blockCanPutPoint(r, c, id))
                 return;
             // 加入grid
             var block = happyClear.Block_conf[blockId];
@@ -245,8 +248,8 @@ var happyClear;
                 for (var j = 0; j < cols; j++) {
                     if (block[i][j]) {
                         addscore++;
-                        this.gameGrid[x + i][y + j].num += block[i][j];
-                        this.gameGrid[x + i][y + j].colorId = colorId;
+                        this.gameGrid[r + i][c + j].num += block[i][j];
+                        this.gameGrid[r + i][c + j].colorId = colorId;
                     }
                 }
             }
@@ -254,33 +257,48 @@ var happyClear;
         };
         // 消除
         GameData.prototype.doClear = function () {
-            var canClearRows = []; // 可以消除的行
-            var canClearCols = []; // 可以消除的列
+            var clears = 0;
+            var gzs = [];
             for (var i = 0; i < 8; i++) {
                 var sums = 0;
                 for (var j = 0; j < 8; j++) {
-                    sums += this.gameGrid[i][j];
+                    sums += this.gameGrid[i][j].num;
                 }
-                if (sums >= 8)
-                    canClearRows.push(i);
+                if (sums >= 8) {
+                    clears++;
+                    for (var j = 0; j < 8; j++) {
+                        if (this.gameGrid[i][j].gz != null) {
+                            gzs.push(this.gameGrid[i][j].gz);
+                            this.gameGrid[i][j].gz = null;
+                            this.gameGrid[i][j].num = 0;
+                        }
+                    }
+                }
+                ;
             }
             for (var i = 0; i < 8; i++) {
                 var sums = 0;
                 for (var j = 0; j < 8; j++) {
-                    sums += this.gameGrid[j][i];
+                    sums += this.gameGrid[j][i].num;
                 }
-                if (sums >= 8)
-                    canClearCols.push(i);
+                if (sums >= 8) {
+                    clears++;
+                    for (var j = 0; j < 8; j++) {
+                        if (this.gameGrid[j][i].gz != null) {
+                            gzs.push(this.gameGrid[j][i].gz);
+                            this.gameGrid[j][i].gz = null;
+                            this.gameGrid[j][i].num = 0;
+                        }
+                    }
+                }
             }
             var addscore = 0;
-            var clears = canClearCols.length + canClearRows.length;
             if (clears > 0) {
                 addscore = this.getScore(clears);
             }
             this.gameScore += addscore;
             return {
-                rows: canClearRows,
-                cols: canClearCols,
+                gzs: gzs,
                 addscore: addscore
             };
         };
@@ -292,6 +310,17 @@ var happyClear;
                 clears--;
             }
             return;
+        };
+        // 判断是否还有可用的组合
+        GameData.prototype.haveBlockToUse = function () {
+            var len = this.blocks.length;
+            if (len == 0)
+                return false;
+            for (var i = 0; i < len; i++) {
+                if (this.blocks[i].isPut == false)
+                    return true;
+            }
+            return false;
         };
         return GameData;
     }());

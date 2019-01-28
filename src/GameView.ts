@@ -91,6 +91,11 @@ class GameView extends egret.Sprite {
 		bg_block.height = this.blockSprite.height;
 
 		// 随机3个组合格子
+		this.resetBlock();
+	}
+
+	// 随机组合格子
+	private resetBlock() {
 		this.gameData.initBlock();
 
 		this.gameData.blocks.forEach(blockinfo => {
@@ -99,7 +104,6 @@ class GameView extends egret.Sprite {
 			blockview.touchEnabled = true;
 			blockview.addEventListener(egret.TouchEvent.TOUCH_BEGIN, this.onBlockTouchBegin1, this);
 		});
-
 	}
 
 	private onBlockTouchBegin1(e: egret.TouchEvent): void {
@@ -123,6 +127,8 @@ class GameView extends egret.Sprite {
 		this.addEventListener(egret.TouchEvent.TOUCH_BEGIN, this.onBlockTouchBegin, this);
 		this.addEventListener(egret.TouchEvent.TOUCH_MOVE, this.onBlockTouchMove, this);
 		this.addEventListener(egret.TouchEvent.TOUCH_END, this.onBlockTouchEnd, this);
+		this.addEventListener(egret.TouchEvent.TOUCH_CANCEL, this.onBlockTouchCancel, this);
+		this.addEventListener(egret.TouchEvent.TOUCH_RELEASE_OUTSIDE, this.onBlockTouchReleaeOutside, this);
 
 	}
 
@@ -132,6 +138,18 @@ class GameView extends egret.Sprite {
 		this.curblockview.y = e.stageY - this.y - 300;
 		console.log('onBlockTouchBegin:', this.curblockview.x, this.curblockview.y, e.stageX, e.stageY);
 	}
+
+	private onBlockTouchCancel(e: egret.TouchEvent): void {
+
+		console.log('onBlockTouchCancel:', this.curblockview.x, this.curblockview.y, e.stageX, e.stageY);
+	}
+
+	private onBlockTouchReleaeOutside(e: egret.TouchEvent): void {
+
+		console.log('onBlockTouchReleaeOutside:', this.curblockview.x, this.curblockview.y, e.stageX, e.stageY);
+		this.onBlockTouchEnd(e);
+	}
+
 
 	private onBlockTouchMove(e: egret.TouchEvent): void {
 
@@ -149,7 +167,7 @@ class GameView extends egret.Sprite {
 		console.log('onBlockTouchEnd:', e.stageX, e.stageY);
 
 		// 点的转换
-		let pos = this.gameData.getPos(this.curblockview.x - this.grid_start_x, this.curblockview.y - this.grid_start_y);
+		let pos = this.gameData.getPos(this.curblockview.x - this.grid_start_x + happyClear.Grid_conf.gz_width / 2, this.curblockview.y - this.grid_start_y + happyClear.Grid_conf.gz_width / 2);
 		let canPutDown = false;
 		let r = 0;
 		let c = 0;
@@ -164,25 +182,49 @@ class GameView extends egret.Sprite {
 
 		if (canPutDown) {
 			// 放下block，并删除blockview
-			this.blockAddToGrid(r,c, this.curblockview.getBlockInfo());
 			this.gameData.blockAddToGrid(r, c, this.curblockview.getBlockInfo().id);
+			this.blockAddToGrid(r, c, this.curblockview.getBlockInfo());
 			this.curblockview.setState(happyClear.Block_state.END);
 			this.removeChild(this.curblockview);
+
+			this.curblockview = null;
+
+			this.checkClear();
+
 		} else {
 			// block还原
 			this.blockSprite.addChild(this.curblockview);
 			this.curblockview.setState(happyClear.Block_state.INIT);
 			this.curblockview.addEventListener(egret.TouchEvent.TOUCH_BEGIN, this.onBlockTouchBegin1, this);
+
+			this.curblockview.x = this.oldx;
+			this.curblockview.y = this.oldy;
 		}
 
-
-		this.curblockview.x = this.oldx;
-		this.curblockview.y = this.oldy;
 
 		this.touchEnabled = false;
 		this.removeEventListener(egret.TouchEvent.TOUCH_BEGIN, this.onBlockTouchBegin, this);
 		this.removeEventListener(egret.TouchEvent.TOUCH_MOVE, this.onBlockTouchMove, this);
 		this.removeEventListener(egret.TouchEvent.TOUCH_END, this.onBlockTouchEnd, this);
+		this.removeEventListener(egret.TouchEvent.TOUCH_CANCEL, this.onBlockTouchCancel, this);
+		this.removeEventListener(egret.TouchEvent.TOUCH_RELEASE_OUTSIDE, this.onBlockTouchReleaeOutside, this);
+	}
+
+	private checkClear() {
+		// 清楚数据中的gz
+		let clearData = this.gameData.doClear();
+
+		// 从试图中清除掉gz
+		if (clearData.gzs.length > 0) {
+			for (let i = 0; i < clearData.gzs.length; i++) {
+				this.grid.removeChild(clearData.gzs[i]);
+			}
+		}
+
+		// 如果没有可用的组合，则再次生产
+		if (this.gameData.haveBlockToUse() == false) {
+			this.resetBlock();
+		}
 	}
 
 
@@ -207,6 +249,8 @@ class GameView extends egret.Sprite {
 					let gz = ResourceUtils.createBitmapByName("game_json." + color);
 					let gz_info = this.gameData.getGridInfoByPos(i + x, j + y);
 					this.grid.addChild(gz);
+
+					this.gameData.attachGz(i + x, j + y, gz);
 					gz.x = gz_info.x;
 					gz.y = gz_info.y;
 					gz.width = happyClear.Grid_conf.gz_width;

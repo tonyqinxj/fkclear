@@ -2,45 +2,45 @@
 namespace happyClear {
 	// 定义组合形态，一个点阵，1表示有方块，0表示没有
 	export const Block_conf = [
-		 // 0
+		// 0
 		[
 			[1]
 		],
-		 // 1
+		// 1
 		[
 			[1, 1]
 		],
-		 // 2
+		// 2
 		[
 			[1, 1, 1]
 		],
-		 // 3
+		// 3
 		[
 			[1, 1, 1, 1]
 		],
-		 // 4
+		// 4
 		[
 			[1, 1, 1, 1, 1]
 		],
-		 // 5
+		// 5
 		[
 			[1],
 			[1]
 		],
-		 // 6
+		// 6
 		[
 			[1],
 			[1],
 			[1]
 		],
-		 // 7
+		// 7
 		[
 			[1],
 			[1],
 			[1],
 			[1],
 		],
-		 // 8
+		// 8
 		[
 			[1],
 			[1],
@@ -48,12 +48,12 @@ namespace happyClear {
 			[1],
 			[1]
 		],
-		 // 9
+		// 9
 		[
 			[0, 1, 1],
 			[1, 1, 0]
 		],
-		 // 10
+		// 10
 		[
 			[1, 1],
 			[1, 0]
@@ -114,8 +114,8 @@ namespace happyClear {
 	export class GameData {
 
 		public gameScore: number; // 游戏分数
-		public gameGrid: Array<Array<any>>; // 游戏格子管理 {colorId, num, x, y}
-		public blocks: Array<any>; // 可选择的组件 {id, x, y, colorId, blockId, canPut, isput}
+		public gameGrid: Array<Array<any>>; // 游戏格子管理 {colorId, num, x, y, gz}
+		public blocks: Array<any>; // 可选择的组件 {id, x, y, colorId, blockId, canPut, isPut}
 
 
 		public constructor() {
@@ -145,40 +145,48 @@ namespace happyClear {
 						colorId: 0,
 						x: x,
 						y: y,
+						gz: null,
 					});
 				}
 			}
 		}
 
-		public getGridInfoByPos(x:number, y:number):any{
+		public attachGz(r: number, c: number, gz: any) {
+			this.gameGrid[r][c].gz = gz;
+		}
+
+
+		public getGridInfoByPos(x: number, y: number): any {
 			return this.gameGrid[x][y];
 		}
 
-		public getPos(px:number, py:number):any{
+		public getPos(px: number, py: number): any {
 
 			for (let i = 0; i < 8; i++) {
-				for (let j = 0; j < 8; j++){
-					if(
+				for (let j = 0; j < 8; j++) {
+					if (
 						this.gameGrid[i][j].x <= px && px <= this.gameGrid[i][j].x + happyClear.Grid_conf.gz_width &&
 						this.gameGrid[i][j].y <= py && py <= this.gameGrid[i][j].y + happyClear.Grid_conf.gz_width
-					){
+					) {
 						return {
-							r:i,
-							c:j,
-							find:true,
+							r: i,
+							c: j,
+							find: true,
 						}
 					}
 				}
 			}
 
 			return {
-				find:false
+				find: false
 			}
 		}
 
 		// 初始化一批block（每一批3个）
 		public initBlock() {
-			if (this.blocks.length > 0) return;
+			if (this.blocks.length > 0) {
+				this.blocks = [];
+			}
 
 			let x = happyClear.Grid_conf.op_start_x;
 			let y = happyClear.Grid_conf.op_start_y;
@@ -193,7 +201,7 @@ namespace happyClear {
 					colorId: colorId,
 					blockId: blockId,
 					canPut: false,
-					isput: false
+					isPut: false
 				});
 
 				x += happyClear.Grid_conf.op_size;
@@ -211,8 +219,8 @@ namespace happyClear {
 
 			let blockId = this.blocks[id].blockId;
 
-			console.log('blockCanPutPoint:', x, y, blockId);
-			
+			console.log('blockCanPutPoint:', r, c, blockId);
+
 			let block = happyClear.Block_conf[blockId];
 			let rows = block.length;
 			let cols = block[0].length;
@@ -295,31 +303,50 @@ namespace happyClear {
 		// 消除
 		public doClear() {
 
-			let canClearRows = []; // 可以消除的行
-			let canClearCols = []; // 可以消除的列
+			let clears = 0;
+			let gzs = [];
 
 			for (let i = 0; i < 8; i++) {
 				let sums = 0;
 				for (let j = 0; j < 8; j++) {
-					sums += this.gameGrid[i][j];
+					sums += this.gameGrid[i][j].num;
 				}
 
-				if (sums >= 8) canClearRows.push(i);
+				if (sums >= 8) {
+
+					clears++;
+					for (let j = 0; j < 8; j++) {
+						if (this.gameGrid[i][j].gz != null) {
+							gzs.push(this.gameGrid[i][j].gz);
+							this.gameGrid[i][j].gz = null;
+							this.gameGrid[i][j].num = 0;
+						}
+					}
+
+				};
 			}
 
 			for (let i = 0; i < 8; i++) {
 				let sums = 0;
 				for (let j = 0; j < 8; j++) {
-					sums += this.gameGrid[j][i];
+					sums += this.gameGrid[j][i].num;
 				}
 
-				if (sums >= 8) canClearCols.push(i);
+				if (sums >= 8) {
+					clears++;
+					for (let j = 0; j < 8; j++) {
+						if (this.gameGrid[j][i].gz != null) {
+							gzs.push(this.gameGrid[j][i].gz);
+							this.gameGrid[j][i].gz = null;
+							this.gameGrid[j][i].num = 0;
+						}
+					}
+				}
 			}
 
 
 			let addscore = 0;
 
-			let clears = canClearCols.length + canClearRows.length;
 			if (clears > 0) {
 				addscore = this.getScore(clears);
 			}
@@ -327,8 +354,7 @@ namespace happyClear {
 			this.gameScore += addscore;
 
 			return {
-				rows: canClearRows,
-				cols: canClearCols,
+				gzs: gzs,
 				addscore: addscore
 			}
 		}
@@ -342,6 +368,19 @@ namespace happyClear {
 				clears--;
 			}
 			return
+		}
+
+		// 判断是否还有可用的组合
+		public haveBlockToUse() {
+
+			let len = this.blocks.length;
+			if (len == 0) return false;
+
+			for (let i = 0; i < len; i++) {
+				if (this.blocks[i].isPut == false) return true;
+			}
+
+			return false;
 		}
 	}
 }

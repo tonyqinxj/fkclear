@@ -55,7 +55,6 @@ var GameView = (function (_super) {
         }
     };
     GameView.prototype.createBlocks = function () {
-        var _this = this;
         // 创建容器
         this.blockSprite = new egret.Sprite();
         this.addChild(this.blockSprite);
@@ -69,6 +68,11 @@ var GameView = (function (_super) {
         bg_block.width = this.blockSprite.width;
         bg_block.height = this.blockSprite.height;
         // 随机3个组合格子
+        this.resetBlock();
+    };
+    // 随机组合格子
+    GameView.prototype.resetBlock = function () {
+        var _this = this;
         this.gameData.initBlock();
         this.gameData.blocks.forEach(function (blockinfo) {
             var blockview = new BlockView(blockinfo);
@@ -92,11 +96,20 @@ var GameView = (function (_super) {
         this.addEventListener(egret.TouchEvent.TOUCH_BEGIN, this.onBlockTouchBegin, this);
         this.addEventListener(egret.TouchEvent.TOUCH_MOVE, this.onBlockTouchMove, this);
         this.addEventListener(egret.TouchEvent.TOUCH_END, this.onBlockTouchEnd, this);
+        this.addEventListener(egret.TouchEvent.TOUCH_CANCEL, this.onBlockTouchCancel, this);
+        this.addEventListener(egret.TouchEvent.TOUCH_RELEASE_OUTSIDE, this.onBlockTouchReleaeOutside, this);
     };
     GameView.prototype.onBlockTouchBegin = function (e) {
         this.curblockview.x = e.stageX - this.x;
         this.curblockview.y = e.stageY - this.y - 300;
         console.log('onBlockTouchBegin:', this.curblockview.x, this.curblockview.y, e.stageX, e.stageY);
+    };
+    GameView.prototype.onBlockTouchCancel = function (e) {
+        console.log('onBlockTouchCancel:', this.curblockview.x, this.curblockview.y, e.stageX, e.stageY);
+    };
+    GameView.prototype.onBlockTouchReleaeOutside = function (e) {
+        console.log('onBlockTouchReleaeOutside:', this.curblockview.x, this.curblockview.y, e.stageX, e.stageY);
+        this.onBlockTouchEnd(e);
     };
     GameView.prototype.onBlockTouchMove = function (e) {
         this.curblockview.x = e.stageX - this.x;
@@ -109,38 +122,53 @@ var GameView = (function (_super) {
     GameView.prototype.onBlockTouchEnd = function (e) {
         console.log('onBlockTouchEnd:', e.stageX, e.stageY);
         // 点的转换
-        var pos = this.gameData.getPos(this.curblockview.x - this.grid_start_x, this.curblockview.y - this.grid_start_y);
+        var pos = this.gameData.getPos(this.curblockview.x - this.grid_start_x + happyClear.Grid_conf.gz_width / 2, this.curblockview.y - this.grid_start_y + happyClear.Grid_conf.gz_width / 2);
         var canPutDown = false;
-        var x = 0;
-        var y = 0;
+        var r = 0;
+        var c = 0;
         if (pos.find) {
-            x = pos.x;
-            y = pos.y;
-            canPutDown = this.gameData.blockCanPutPoint(x, y, this.curblockview.getBlockInfo().id);
+            r = pos.r;
+            c = pos.c;
+            canPutDown = this.gameData.blockCanPutPoint(r, c, this.curblockview.getBlockInfo().id);
         }
-        console.log('onBlockTouchEnd 1:', pos, x, y, canPutDown);
+        console.log('onBlockTouchEnd 1:', pos, r, c, canPutDown);
         if (canPutDown) {
             // 放下block，并删除blockview
-            this.blockAddToGrid(x, y, this.curblockview.getBlockInfo());
-            this.gameData.blockAddToGrid(x, y, this.curblockview.getBlockInfo().id);
+            this.gameData.blockAddToGrid(r, c, this.curblockview.getBlockInfo().id);
+            this.blockAddToGrid(r, c, this.curblockview.getBlockInfo());
             this.curblockview.setState(happyClear.Block_state.END);
             this.removeChild(this.curblockview);
+            this.curblockview = null;
+            this.checkClear();
         }
         else {
             // block还原
             this.blockSprite.addChild(this.curblockview);
             this.curblockview.setState(happyClear.Block_state.INIT);
             this.curblockview.addEventListener(egret.TouchEvent.TOUCH_BEGIN, this.onBlockTouchBegin1, this);
+            this.curblockview.x = this.oldx;
+            this.curblockview.y = this.oldy;
         }
-        this.curblockview.x = this.oldx;
-        this.curblockview.y = this.oldy;
         this.touchEnabled = false;
         this.removeEventListener(egret.TouchEvent.TOUCH_BEGIN, this.onBlockTouchBegin, this);
         this.removeEventListener(egret.TouchEvent.TOUCH_MOVE, this.onBlockTouchMove, this);
         this.removeEventListener(egret.TouchEvent.TOUCH_END, this.onBlockTouchEnd, this);
+        this.removeEventListener(egret.TouchEvent.TOUCH_CANCEL, this.onBlockTouchCancel, this);
+        this.removeEventListener(egret.TouchEvent.TOUCH_RELEASE_OUTSIDE, this.onBlockTouchReleaeOutside, this);
     };
-    GameView.prototype.matchCurBlockPos = function () {
-        return this.gameData.getPos(this.curblockview.x, this.curblockview.y);
+    GameView.prototype.checkClear = function () {
+        // 清楚数据中的gz
+        var clearData = this.gameData.doClear();
+        // 从试图中清除掉gz
+        if (clearData.gzs.length > 0) {
+            for (var i = 0; i < clearData.gzs.length; i++) {
+                this.grid.removeChild(clearData.gzs[i]);
+            }
+        }
+        // 如果没有可用的组合，则再次生产
+        if (this.gameData.haveBlockToUse() == false) {
+            this.resetBlock();
+        }
     };
     GameView.prototype.blockAddToGrid = function (x, y, blockInfo) {
         // blockInfo { blockId, colorId}
@@ -157,6 +185,7 @@ var GameView = (function (_super) {
                     var gz = ResourceUtils.createBitmapByName("game_json." + color);
                     var gz_info = this.gameData.getGridInfoByPos(i + x, j + y);
                     this.grid.addChild(gz);
+                    this.gameData.attachGz(i + x, j + y, gz);
                     gz.x = gz_info.x;
                     gz.y = gz_info.y;
                     gz.width = happyClear.Grid_conf.gz_width;
