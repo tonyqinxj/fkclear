@@ -1,0 +1,170 @@
+{
+   "version" : "0.0.1",
+   "hardlevel" : "3",
+   "floatup":"210",
+   "specialphone":["iphone X","ASUS Zenfone 5","Ulefone T2 Pro","Leagoo S9","Huawei P20","Doogee V","OPPO R15","LG G7","UMIDIGI Z2","OUKITEL U18","OWWO X","HOTWAV SYMBOL S3","ESSENTIAL PH1","BLACKVIEW X","ALOES","WIKO WAVE 2","NOA N10","NOA N9","ILA X","ULEFONE T2","XIAOLAJIAO S6","GOOPHONE X","SHARP AQUOS S3","VIVO X21","VIVO V83","VIVO Y83"],
+   "guidedata" : {
+      "startdata" : [
+         [ 0, 0, 0, 0, 0, 0, 0, 0 ],
+         [ 0, 0, 0, 0, 0, 0, 0, 0 ],
+         [ 0, 0, 0, 0, 0, 0, 0, 0 ],
+         [ 1, 1, 1, 0, 0, 1, 1, 1 ],
+         [ 1, 1, 1, 0, 0, 1, 1, 1 ],
+         [ 0, 0, 0, 0, 0, 0, 0, 0 ],
+         [ 0, 0, 0, 0, 0, 0, 0, 0 ],
+         [ 0, 0, 0, 0, 0, 0, 0, 0 ]
+      ],
+      "startselect" : [6,6],
+      "guidepoint":[[3,3],[3,4]],
+      "guidetips":["拖动方块至目标位置","再来一次就可以消除这两行了"]
+   },
+   "simplestep":[1,2,3,6,7,10],
+   "hardrate":[0.5,0.3,0],
+   "selectdata" : [
+      {
+         "id" : 1,
+         "showscore" : 0,
+         "data" : [
+            [ 1 ]
+         ]
+      },
+      {
+         "id" : 2,
+         "showscore" : 0,
+         "data" : [
+            [ 1, 1 ]
+         ]
+      },
+      {
+         "id" : 3,
+         "showscore" : 0,
+         "data" : [
+            [ 1, 1, 1 ]
+         ]
+      },
+      {
+         "id" : 4,
+         "showscore" : 0,
+         "data" : [
+            [ 1, 1, 1, 1 ]
+         ]
+      },
+      {
+         "id" : 5,
+         "showscore" : 50,
+         "showani": false,
+         "rate": 1,
+         "hardlevel": 100,
+         "data" : [
+            [ 1, 1, 1, 1, 1 ]
+         ]
+      },
+      {
+         "id" : 6,
+         "showscore" : 0,
+         "data" : [
+            [ 1 ],
+            [ 1 ]
+         ]
+      },
+      {
+         "id" : 7,
+         "showscore" : 0,
+         "data" : [
+            [ 1 ],
+            [ 1 ],
+            [ 1 ]
+         ]
+      },
+      {
+         "id" : 8,
+         "showscore" : 0,
+         "data" : [
+            [ 1 ],
+            [ 1 ],
+            [ 1 ],
+            [ 1 ]
+         ]
+      },
+      {
+         "id" : 9,
+         "showscore" : 50,
+         "showani": false,
+         "rate": 1,
+         "hardlevel": 100,
+         "data" : [
+            [ 1 ],
+            [ 1 ],
+            [ 1 ],
+            [ 1 ],
+            [ 1 ]
+         ]
+      },
+      {
+         "id" : 10,
+         "showscore" : 0,
+         "data" : [
+            [ 1, 1 ],
+	        [ 1, 0 ]
+         ]
+      },
+      {
+         "id" : 11,
+         "showscore" : 800,
+         "showani": false,
+         "data" : [
+            [ 0, 1, 0 ],
+	        [ 1, 1, 1 ]
+         ]
+      },
+      {
+         "id" : 12,
+         "showscore" : 600,
+         "showani": false,
+         "rate": 1,
+         "hardlevel": 100,
+         "data" : [
+            [ 1, 1, 1 ],
+	        [ 1, 1, 1 ],
+            [ 1, 1, 1 ]
+         ]
+      },
+      {
+         "id" : 13,
+         "showscore" : 200,
+         "showani": false,
+         "rate": 1,
+          "hardlevel": 100,
+         "data" : [
+            [ 1, 1, 1 ],
+	        [ 0, 0, 1 ],
+            [ 0, 0, 1 ]
+         ]
+      },
+      {
+         "id" : 14,
+         "showscore" : 0,
+         "data" : [
+            [ 1, 0, 0 ],
+	        [ 1, 1, 1 ]
+         ]
+      },
+      {
+         "id" : 15,
+         "showscore" : 400,
+         "showani": false,
+         "data" : [
+            [ 0, 1, 1 ],
+	        [ 1, 1, 0 ]
+         ]
+      },
+      {
+         "id" : 16,
+         "showscore" : 0,
+         "data" : [
+            [ 1, 1 ],
+	        [ 1, 1 ]
+         ]
+      }
+   ]
+}

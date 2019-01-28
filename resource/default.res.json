@@ -1,0 +1,77 @@
+{
+	"groups": [
+		{
+			"keys": "chuizi_tex_png,p4_png,off_png,on_png,chuizi_ske_json,chuizi_tex_json,an_png,b_png,d_jpg,hw_coupon_json,k_png,p_jpg,game_json",
+			"name": "preload"
+		}
+	],
+	"resources": [
+		{
+			"url": "assets/dbani/chuizi_tex.png",
+			"type": "image",
+			"name": "chuizi_tex_png"
+		},
+		{
+			"url": "assets/game/game.json",
+			"type": "sheet",
+			"name": "game_json",
+			"subkeys": "1,11,12,13,14,15,16,17,18,19,2,20,21,22,23,24,25,26,27,28,29,3,30,31,32,33,34,35,36,37,38,39,4,40,41,42,43,44,45,46,47,48,49,5,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,l1,l2,l3,l4,l5,l6,l7,l8,l9"
+		},
+		{
+			"url": "assets/perload/p4.png",
+			"type": "image",
+			"name": "p4_png"
+		},
+		{
+			"url": "assets/music/off.png",
+			"type": "image",
+			"name": "off_png"
+		},
+		{
+			"url": "assets/music/on.png",
+			"type": "image",
+			"name": "on_png"
+		},
+		{
+			"url": "assets/dbani/chuizi_ske.json",
+			"type": "json",
+			"name": "chuizi_ske_json"
+		},
+		{
+			"url": "assets/dbani/chuizi_tex.json",
+			"type": "json",
+			"name": "chuizi_tex_json"
+		},
+		{
+			"url": "assets/income/an.png",
+			"type": "image",
+			"name": "an_png"
+		},
+		{
+			"url": "assets/income/b.png",
+			"type": "image",
+			"name": "b_png"
+		},
+		{
+			"url": "assets/income/d.jpg",
+			"type": "image",
+			"name": "d_jpg"
+		},
+		{
+			"url": "assets/income/hw_coupon.json",
+			"type": "sheet",
+			"name": "hw_coupon_json",
+			"subkeys": "1_png,2_png,3_png,4B_png,BTN_png,dailingqutubiao_png,guanbi_png,kai_png,rb1_png,rb2_png,title1_png"
+		},
+		{
+			"url": "assets/income/k.png",
+			"type": "image",
+			"name": "k_png"
+		},
+		{
+			"url": "assets/income/p.jpg",
+			"type": "image",
+			"name": "p_jpg"
+		}
+	]
+}
