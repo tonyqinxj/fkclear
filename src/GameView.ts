@@ -8,11 +8,13 @@ class GameView extends egret.Sprite {
 
 	private gameData: happyClear.GameData;	// 游戏数据
 
-	private gridData
+
 	private curblockview: BlockView;	// 当前正在操作的组合格子
 	private oldx: number;	// 当前正在操作的组合格子的原x
 	private oldy: number;	// 当前正在操作的组合格子的原y
 
+	private shadow: Array<any>; // 移动过程中的阴影 [gz]
+	private shadow_pos: any; // {r,c}
 
 	private grid_start_x: number = 0;
 	private grid_start_y: number = 136;
@@ -20,6 +22,8 @@ class GameView extends egret.Sprite {
 		super();
 
 		this.gameData = new happyClear.GameData();
+		this.shadow = [];
+		this.shadow_pos = null;
 	}
 
 	public createView(w: number, h: number): void {
@@ -150,17 +154,75 @@ class GameView extends egret.Sprite {
 		this.onBlockTouchEnd(e);
 	}
 
+	private shadowClear():void {
+		if (this.shadow_pos != null) {
+			this.shadow.forEach(s => {
+				this.grid.removeChild(s);
+			})
+			this.shadow = [];
+		}
+	}
 
 	private onBlockTouchMove(e: egret.TouchEvent): void {
 
 		this.curblockview.x = e.stageX - this.x;
 		this.curblockview.y = e.stageY - this.y - 300;
 
-		// 计算canput
-		// this.gameData.blockCanPut(this.curblockview.getBlockInfo().id);
-		// 根据canput，决定是否预先填充
+		let pos = this.gameData.getPos(this.curblockview.x - this.grid_start_x + happyClear.Grid_conf.gz_width / 2, this.curblockview.y - this.grid_start_y + happyClear.Grid_conf.gz_width / 2);
 
-		//console.log('onBlockTouchMove:', this.curblockview.x, this.curblockview.y, e.stageX, e.stageY);
+		let canPutDown = false;
+		let r = 0;
+		let c = 0;
+
+		let blockInfo = this.curblockview.getBlockInfo();
+
+		if (pos.find) {
+			r = pos.r;
+			c = pos.c;
+			canPutDown = this.gameData.blockCanPutPoint(r, c, blockInfo.id);
+		}
+
+		if (canPutDown) {
+			// 绘制阴影
+			if (this.shadow_pos == null || this.shadow_pos.r != r || this.shadow_pos.c != c) {
+						this.shadowClear();
+				this.shadow_pos = pos;
+
+				let blockId = blockInfo.blockId;
+				let colorId = blockInfo.colorId;
+
+				let block = happyClear.Block_conf[blockId];
+				let color = happyClear.Color_conf[colorId];
+
+				let rows = block.length;
+				let cols = block[0].length;
+
+
+				for (let i = 0; i < rows; i++) {
+					for (let j = 0; j < cols; j++) {
+
+						if (block[i][j]) {
+							let gz = ResourceUtils.createBitmapByName("game_json." + color);
+							let gz_info = this.gameData.getGridInfoByPos(i + r, j + c);
+							this.grid.addChild(gz);
+
+							gz.x = gz_info.x;
+							gz.y = gz_info.y;
+							gz.alpha = 0.5;
+							gz.width = happyClear.Grid_conf.gz_width;
+							gz.height = happyClear.Grid_conf.gz_width;
+							this.shadow.push(gz);
+						}
+
+					}
+				}
+
+
+			}
+		} else {
+			this.shadowClear();
+		}
+
 	}
 
 	private onBlockTouchEnd(e: egret.TouchEvent): void {
@@ -179,6 +241,8 @@ class GameView extends egret.Sprite {
 		}
 
 		console.log('onBlockTouchEnd 1:', pos, r, c, canPutDown);
+		
+		this.shadowClear();
 
 		if (canPutDown) {
 			// 放下block，并删除blockview

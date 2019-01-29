@@ -15,6 +15,8 @@ var GameView = (function (_super) {
         _this.grid_start_x = 0;
         _this.grid_start_y = 136;
         _this.gameData = new happyClear.GameData();
+        _this.shadow = [];
+        _this.shadow_pos = null;
         return _this;
     }
     GameView.prototype.createView = function (w, h) {
@@ -111,13 +113,59 @@ var GameView = (function (_super) {
         console.log('onBlockTouchReleaeOutside:', this.curblockview.x, this.curblockview.y, e.stageX, e.stageY);
         this.onBlockTouchEnd(e);
     };
+    GameView.prototype.shadowClear = function () {
+        var _this = this;
+        if (this.shadow_pos != null) {
+            this.shadow.forEach(function (s) {
+                _this.grid.removeChild(s);
+            });
+            this.shadow = [];
+        }
+    };
     GameView.prototype.onBlockTouchMove = function (e) {
         this.curblockview.x = e.stageX - this.x;
         this.curblockview.y = e.stageY - this.y - 300;
-        // 计算canput
-        // this.gameData.blockCanPut(this.curblockview.getBlockInfo().id);
-        // 根据canput，决定是否预先填充
-        //console.log('onBlockTouchMove:', this.curblockview.x, this.curblockview.y, e.stageX, e.stageY);
+        var pos = this.gameData.getPos(this.curblockview.x - this.grid_start_x + happyClear.Grid_conf.gz_width / 2, this.curblockview.y - this.grid_start_y + happyClear.Grid_conf.gz_width / 2);
+        var canPutDown = false;
+        var r = 0;
+        var c = 0;
+        var blockInfo = this.curblockview.getBlockInfo();
+        if (pos.find) {
+            r = pos.r;
+            c = pos.c;
+            canPutDown = this.gameData.blockCanPutPoint(r, c, blockInfo.id);
+        }
+        if (canPutDown) {
+            // 绘制阴影
+            if (this.shadow_pos == null || this.shadow_pos.r != r || this.shadow_pos.c != c) {
+                this.shadowClear();
+                this.shadow_pos = pos;
+                var blockId = blockInfo.blockId;
+                var colorId = blockInfo.colorId;
+                var block = happyClear.Block_conf[blockId];
+                var color = happyClear.Color_conf[colorId];
+                var rows = block.length;
+                var cols = block[0].length;
+                for (var i = 0; i < rows; i++) {
+                    for (var j = 0; j < cols; j++) {
+                        if (block[i][j]) {
+                            var gz = ResourceUtils.createBitmapByName("game_json." + color);
+                            var gz_info = this.gameData.getGridInfoByPos(i + r, j + c);
+                            this.grid.addChild(gz);
+                            gz.x = gz_info.x;
+                            gz.y = gz_info.y;
+                            gz.alpha = 0.5;
+                            gz.width = happyClear.Grid_conf.gz_width;
+                            gz.height = happyClear.Grid_conf.gz_width;
+                            this.shadow.push(gz);
+                        }
+                    }
+                }
+            }
+        }
+        else {
+            this.shadowClear();
+        }
     };
     GameView.prototype.onBlockTouchEnd = function (e) {
         console.log('onBlockTouchEnd:', e.stageX, e.stageY);
@@ -132,6 +180,7 @@ var GameView = (function (_super) {
             canPutDown = this.gameData.blockCanPutPoint(r, c, this.curblockview.getBlockInfo().id);
         }
         console.log('onBlockTouchEnd 1:', pos, r, c, canPutDown);
+        this.shadowClear();
         if (canPutDown) {
             // 放下block，并删除blockview
             this.gameData.blockAddToGrid(r, c, this.curblockview.getBlockInfo().id);
