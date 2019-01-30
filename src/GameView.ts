@@ -202,7 +202,7 @@ class GameView extends egret.Sprite {
 					for (let j = 0; j < cols; j++) {
 
 						if (block[i][j]) {
-							let gz = ResourceUtils.createBitmapByName("game_json." + color);
+							let gz = ResourceUtils.createBitmapByName(color);
 							let gz_info = this.gameData.getGridInfoByPos(i + r, j + c);
 							this.grid.addChild(gz);
 
@@ -310,7 +310,7 @@ class GameView extends egret.Sprite {
 			for (let j = 0; j < cols; j++) {
 
 				if (block[i][j]) {
-					let gz = ResourceUtils.createBitmapByName("game_json." + color);
+					let gz = ResourceUtils.createBitmapByName(color);
 					let gz_info = this.gameData.getGridInfoByPos(i + x, j + y);
 					this.grid.addChild(gz);
 

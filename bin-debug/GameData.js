@@ -91,11 +91,12 @@ var happyClear;
     ];
     // 各种颜色方块对应的game.json中的id（资源名）
     happyClear.Color_conf = [
-        '15', '16', '17', '18', '19', '20', '21'
+        'game_gz_fang_png', 'game_gz_hong_png', 'game_gz_hei_png', 'game_gz_mei_png'
     ];
     happyClear.Grid_conf = {
-        gz_width: 69,
-        gz_padding: 4,
+        gz_width: 76,
+        fk_width: 74,
+        gz_padding: 2,
         grid_line_width: 10,
         grid_left_width: 10,
         // 定义操作区中的三个组合的位置
@@ -124,8 +125,8 @@ var happyClear;
             for (var i = 0; i < 8; i++) {
                 this.gameGrid.push([]);
                 for (var j = 0; j < 8; j++) {
-                    x = happyClear.Grid_conf.grid_left_width + happyClear.Grid_conf.grid_line_width + happyClear.Grid_conf.gz_padding * (j + 1) + j * happyClear.Grid_conf.gz_width;
-                    y = happyClear.Grid_conf.grid_line_width + happyClear.Grid_conf.gz_padding * (i + 1) + i * happyClear.Grid_conf.gz_width;
+                    x = happyClear.Grid_conf.gz_width * j + (happyClear.Grid_conf.gz_width - happyClear.Grid_conf.fk_width) / 2;
+                    y = happyClear.Grid_conf.gz_width * i + (happyClear.Grid_conf.gz_width - happyClear.Grid_conf.fk_width) / 2;
                     this.gameGrid[i].push({
                         num: 0,
                         colorId: 0,
@@ -143,6 +144,7 @@ var happyClear;
             return this.gameGrid[x][y];
         };
         GameData.prototype.getPos = function (px, py) {
+            // px,py 是相对于gameGroup的坐标
             for (var i = 0; i < 8; i++) {
                 for (var j = 0; j < 8; j++) {
                     if (this.gameGrid[i][j].x <= px && px <= this.gameGrid[i][j].x + happyClear.Grid_conf.gz_width &&

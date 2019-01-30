@@ -90,12 +90,16 @@ namespace happyClear {
 
 	// 各种颜色方块对应的game.json中的id（资源名）
 	export const Color_conf = [
-		'15', '16', '17', '18', '19', '20', '21'
+		'game_gz_fang_png', 'game_gz_hong_png', 'game_gz_hei_png', 'game_gz_mei_png'
 	];
 
 	export const Grid_conf = {
-		gz_width: 69, 		// 方块边长
-		gz_padding: 4, 		// 方块之间的间隔
+
+
+		gz_width: 76, 		// 格子边长
+		fk_width: 74,		// 方块边长
+
+		gz_padding: 2, 		// 方块之间的间隔
 		grid_line_width: 10,	// 游戏区边框厚度
 		grid_left_width: 10, // 游戏区留空（两边）
 
@@ -137,8 +141,8 @@ namespace happyClear {
 			for (let i = 0; i < 8; i++) {
 				this.gameGrid.push([]);
 				for (let j = 0; j < 8; j++) {
-					x = happyClear.Grid_conf.grid_left_width + happyClear.Grid_conf.grid_line_width + happyClear.Grid_conf.gz_padding * (j + 1) + j * happyClear.Grid_conf.gz_width;
-					y = happyClear.Grid_conf.grid_line_width + happyClear.Grid_conf.gz_padding * (i + 1) + i * happyClear.Grid_conf.gz_width;
+					x = Grid_conf.gz_width*j+(Grid_conf.gz_width-Grid_conf.fk_width)/2;
+					y = Grid_conf.gz_width*i+(Grid_conf.gz_width-Grid_conf.fk_width)/2;
 
 					this.gameGrid[i].push({
 						num: 0,
@@ -161,7 +165,7 @@ namespace happyClear {
 		}
 
 		public getPos(px: number, py: number): any {
-
+			// px,py 是相对于gameGroup的坐标
 			for (let i = 0; i < 8; i++) {
 				for (let j = 0; j < 8; j++) {
 					if (
@@ -188,12 +192,12 @@ namespace happyClear {
 				this.blocks = [];
 			}
 
-			let x = happyClear.Grid_conf.op_start_x;
-			let y = happyClear.Grid_conf.op_start_y;
+			let x = Grid_conf.op_start_x;
+			let y = Grid_conf.op_start_y;
 
 			for (let i = 0; i < 3; i++) {
-				let colorId = Math.floor(Math.random() * happyClear.Color_conf.length);
-				let blockId = Math.floor(Math.random() * happyClear.Block_conf.length);
+				let colorId = Math.floor(Math.random() * Color_conf.length);
+				let blockId = Math.floor(Math.random() * Block_conf.length);
 				this.blocks.push({
 					id: i,
 					x: x,
@@ -204,7 +208,7 @@ namespace happyClear {
 					isPut: false
 				});
 
-				x += happyClear.Grid_conf.op_size;
+				x += Grid_conf.op_size;
 			}
 
 			for (let i = 0; i < 3; i++) {

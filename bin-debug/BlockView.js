@@ -56,7 +56,7 @@ var BlockView = (function (_super) {
                 if (blockdata[r][c]) {
                     var x = c * (this.gz_padding + this.gz_width);
                     var y = r * (this.gz_padding + this.gz_width);
-                    var fk = ResourceUtils.createBitmapByName('game_json.' + color);
+                    var fk = ResourceUtils.createBitmapByName(color);
                     fk.x = x;
                     fk.y = y;
                     fk.width = this.gz_width;

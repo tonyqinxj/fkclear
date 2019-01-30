@@ -44,6 +44,17 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var gameGroupConfig = {
+    x: 71,
+    y: 356,
+    w: 76 * 8,
+};
+var opGroupConfig = {
+    x: 23,
+    y: 1052,
+    w: 705,
+    h: 181,
+};
 var GameUI = (function (_super) {
     __extends(GameUI, _super);
     function GameUI() {
@@ -51,6 +62,9 @@ var GameUI = (function (_super) {
     }
     GameUI.prototype.createChildren = function () {
         _super.prototype.createChildren.call(this);
+        this.gameData = new happyClear.GameData();
+        this.shadow = [];
+        this.shadow_pos = null;
         this.runGameUI().catch(function (e) {
             console.log(e);
         });
@@ -82,7 +96,7 @@ var GameUI = (function (_super) {
                         return [4 /*yield*/, RES.loadConfig("resource/default.res.json", "resource/")];
                     case 1:
                         _a.sent();
-                        return [4 /*yield*/, RES.loadGroup("start", 0, loadingView)];
+                        return [4 /*yield*/, RES.loadGroup("game", 0, loadingView)];
                     case 2:
                         _a.sent();
                         this.stage.removeChild(loadingView);
@@ -99,6 +113,7 @@ var GameUI = (function (_super) {
     GameUI.prototype.createScene = function () {
         this.createRootGroup();
         this.createStartUI();
+        this.gameData.initGrid();
     };
     GameUI.prototype.createRootGroup = function () {
         // 创建一个顶层的group
@@ -111,7 +126,7 @@ var GameUI = (function (_super) {
         this.addChild(this.rootGroup);
         console.log('wh:', this.rootGroup.width, this.rootGroup.height);
         // 给一个背景图片
-        var bg = ResourceUtils.createBitmapByName("bg_png");
+        var bg = ResourceUtils.createBitmapByName("game_bg_png");
         this.rootGroup.addChild(bg);
         bg.x = 0;
         bg.y = 0;
@@ -119,6 +134,48 @@ var GameUI = (function (_super) {
         bg.height = this.rootGroup.height;
     };
     GameUI.prototype.createStartUI = function () {
+        // 创建game的group
+        this.gameGroup = new eui.Group();
+        this.rootGroup.addChild(this.gameGroup);
+        this.gameGroup.left = gameGroupConfig.x;
+        this.gameGroup.top = gameGroupConfig.y;
+        this.gameGroup.width = gameGroupConfig.w;
+        this.gameGroup.height = gameGroupConfig.w;
+        this.gameGroup.layout = new eui.BasicLayout;
+        // 创建op的group
+        this.opGroup = new eui.Group();
+        this.rootGroup.addChild(this.opGroup);
+        this.opGroup.left = opGroupConfig.x;
+        this.opGroup.top = opGroupConfig.y;
+        this.opGroup.width = opGroupConfig.w;
+        this.opGroup.height = opGroupConfig.h;
+        this.opGroup.layout = new eui.BasicLayout;
+        // 创建bomb按钮
+        var bt_bomb = new eui.Button();
+        this.opGroup.addChild(bt_bomb);
+        bt_bomb.top = 19;
+        bt_bomb.left = 19;
+        bt_bomb.width = 87;
+        bt_bomb.height = 144;
+        var exmlText = "<?xml version=\"1.0\" encoding=\"utf-8\" ?> \n                        <e:Skin class=\"skins.ButtonSkin\" states=\"up,down,disabled\" xmlns:e=\"http://ns.egret.com/eui\"> \n                            <e:Image width=\"100%\" height=\"100%\" alpha.disabled=\"0.5\" alpha.down=\"0.5\"\n                                    source=\"/resource/assets/game_bomb.png\"/> \n                        </e:Skin>";
+        bt_bomb.skinName = exmlText;
+        bt_bomb.addEventListener(egret.TouchEvent.TOUCH_TAP, this.bombTapHandler, this);
+        // 创建change按钮
+        var bt_change = new eui.Button();
+        this.opGroup.addChild(bt_change);
+        bt_change.top = 19;
+        bt_change.right = 19;
+        bt_change.width = 87;
+        bt_change.height = 144;
+        var exmlText = "<?xml version=\"1.0\" encoding=\"utf-8\" ?> \n                        <e:Skin class=\"skins.ButtonSkin\" states=\"up,down,disabled\" xmlns:e=\"http://ns.egret.com/eui\"> \n                            <e:Image width=\"100%\" height=\"100%\" alpha.disabled=\"0.5\" alpha.down=\"0.5\"\n                                    source=\"/resource/assets/game_change.png\"/> \n                        </e:Skin>";
+        bt_change.skinName = exmlText;
+        bt_change.addEventListener(egret.TouchEvent.TOUCH_TAP, this.changeTapHandler, this);
+    };
+    GameUI.prototype.bombTapHandler = function () {
+        console.log('bombTapHandler');
+    };
+    GameUI.prototype.changeTapHandler = function () {
+        console.log('changeTapHandler');
     };
     return GameUI;
 }(eui.UILayer));

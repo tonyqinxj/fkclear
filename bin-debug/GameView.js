@@ -149,7 +149,7 @@ var GameView = (function (_super) {
                 for (var i = 0; i < rows; i++) {
                     for (var j = 0; j < cols; j++) {
                         if (block[i][j]) {
-                            var gz = ResourceUtils.createBitmapByName("game_json." + color);
+                            var gz = ResourceUtils.createBitmapByName(color);
                             var gz_info = this.gameData.getGridInfoByPos(i + r, j + c);
                             this.grid.addChild(gz);
                             gz.x = gz_info.x;
@@ -231,7 +231,7 @@ var GameView = (function (_super) {
         for (var i = 0; i < rows; i++) {
             for (var j = 0; j < cols; j++) {
                 if (block[i][j]) {
-                    var gz = ResourceUtils.createBitmapByName("game_json." + color);
+                    var gz = ResourceUtils.createBitmapByName(color);
                     var gz_info = this.gameData.getGridInfoByPos(i + x, j + y);
                     this.grid.addChild(gz);
                     this.gameData.attachGz(i + x, j + y, gz);

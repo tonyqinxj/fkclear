@@ -64,7 +64,7 @@ class BlockView extends egret.Sprite{
 					let x=c*(this.gz_padding+this.gz_width);
 					let y=r*(this.gz_padding+this.gz_width);
 	
-					let fk = ResourceUtils.createBitmapByName('game_json.'+color);
+					let fk = ResourceUtils.createBitmapByName(color);
 					fk.x=x;
 					fk.y=y;
 					fk.width = this.gz_width;
