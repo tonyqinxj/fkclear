@@ -7,6 +7,10 @@
 		{
 			"keys": "bg_png,start_title_png,bt_start_png,tip_xcx_png",
 			"name": "start"
+		},
+		{
+			"keys": "game_bg_png,game_bomb_png,game_change_png,game_friend_rank_png,game_gz_fang_png,game_gz_hei_png,game_gz_hong_png,game_gz_mei_png,game_high_score_png,game_replay_png,game_score_png,game_tuijian_close_png,game_tuijian_open_png,game_v_close_png,game_v_open_png",
+			"name": "game"
 		}
 	],
 	"resources": [
@@ -96,6 +100,81 @@
 			"url": "assets/tip_xcx.png",
 			"type": "image",
 			"name": "tip_xcx_png"
+		},
+		{
+			"url": "assets/game_bg.png",
+			"type": "image",
+			"name": "game_bg_png"
+		},
+		{
+			"url": "assets/game_bomb.png",
+			"type": "image",
+			"name": "game_bomb_png"
+		},
+		{
+			"url": "assets/game_change.png",
+			"type": "image",
+			"name": "game_change_png"
+		},
+		{
+			"url": "assets/game_friend_rank.png",
+			"type": "image",
+			"name": "game_friend_rank_png"
+		},
+		{
+			"url": "assets/game_gz_fang.png",
+			"type": "image",
+			"name": "game_gz_fang_png"
+		},
+		{
+			"url": "assets/game_gz_hei.png",
+			"type": "image",
+			"name": "game_gz_hei_png"
+		},
+		{
+			"url": "assets/game_gz_hong.png",
+			"type": "image",
+			"name": "game_gz_hong_png"
+		},
+		{
+			"url": "assets/game_gz_mei.png",
+			"type": "image",
+			"name": "game_gz_mei_png"
+		},
+		{
+			"url": "assets/game_high_score.png",
+			"type": "image",
+			"name": "game_high_score_png"
+		},
+		{
+			"url": "assets/game_replay.png",
+			"type": "image",
+			"name": "game_replay_png"
+		},
+		{
+			"url": "assets/game_score.png",
+			"type": "image",
+			"name": "game_score_png"
+		},
+		{
+			"url": "assets/game_tuijian_close.png",
+			"type": "image",
+			"name": "game_tuijian_close_png"
+		},
+		{
+			"url": "assets/game_tuijian_open.png",
+			"type": "image",
+			"name": "game_tuijian_open_png"
+		},
+		{
+			"url": "assets/game_v_close.png",
+			"type": "image",
+			"name": "game_v_close_png"
+		},
+		{
+			"url": "assets/game_v_open.png",
+			"type": "image",
+			"name": "game_v_open_png"
 		}
 	]
 }
