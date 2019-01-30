@@ -3,6 +3,10 @@
 		{
 			"keys": "chuizi_tex_png,p4_png,off_png,on_png,chuizi_ske_json,chuizi_tex_json,an_png,b_png,d_jpg,hw_coupon_json,k_png,p_jpg,game_json",
 			"name": "preload"
+		},
+		{
+			"keys": "bg_png,start_title_png,bt_start_png,tip_xcx_png",
+			"name": "start"
 		}
 	],
 	"resources": [
@@ -72,6 +76,26 @@
 			"url": "assets/income/p.jpg",
 			"type": "image",
 			"name": "p_jpg"
+		},
+		{
+			"url": "assets/bg.png",
+			"type": "image",
+			"name": "bg_png"
+		},
+		{
+			"url": "assets/start_title.png",
+			"type": "image",
+			"name": "start_title_png"
+		},
+		{
+			"url": "assets/bt_start.png",
+			"type": "image",
+			"name": "bt_start_png"
+		},
+		{
+			"url": "assets/tip_xcx.png",
+			"type": "image",
+			"name": "tip_xcx_png"
 		}
 	]
 }

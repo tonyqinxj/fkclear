@@ -115,7 +115,7 @@ var GameView = (function (_super) {
         this.curblockview.x = e.stageX - this.x;
         this.curblockview.y = e.stageY - this.y - 300;
         // 计算canput
-        // this.gameData.blockCanPut(this.curblockview.getBlockInfo().id);
+        this.gameData.blockCanPut(this.curblockview.getBlockInfo().id);
         // 根据canput，决定是否预先填充
         //console.log('onBlockTouchMove:', this.curblockview.x, this.curblockview.y, e.stageX, e.stageY);
     };

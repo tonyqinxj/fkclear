@@ -31,11 +31,11 @@ egret_native.egretStart = function () {
         //以下为自动修改，请勿修改
         //The following is automatically modified, please do not modify
         //----auto option start----
-		entryClassName: "Main",
+		entryClassName: "StartUI",
 		frameRate: 30,
 		scaleMode: "showAll",
-		contentWidth: 640,
-		contentHeight: 1136,
+		contentWidth: 750,
+		contentHeight: 1624,
 		showPaintRect: false,
 		showFPS: false,
 		fpsStyles: "x:0,y:0,size:12,textColor:0xffffff,bgAlpha:0.9",
